@@ -1,0 +1,2287 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#2f7d53" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="Expense Management" />
+    <link rel="manifest" href="manifest.webmanifest" />
+    <link rel="icon" href="icon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="icon.svg" />
+    <title>Expense Management</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f4f7f2;
+        --surface: #ffffff;
+        --surface-soft: #eef5e9;
+        --ink: #17211b;
+        --muted: #637166;
+        --line: rgba(23, 33, 27, 0.12);
+        --green: #2f7d53;
+        --green-dark: #1f5b3a;
+        --mint: #b8dfc3;
+        --blue: #236f91;
+        --yellow: #d89d26;
+        --red: #b84b45;
+        --violet: #7355a3;
+        --teal: #4a7c7f;
+        --shadow: 0 22px 55px rgba(31, 70, 46, 0.15);
+        --radius: 8px;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      [hidden] {
+        display: none !important;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        background:
+          linear-gradient(135deg, rgba(184, 223, 195, 0.55), transparent 42%),
+          linear-gradient(315deg, rgba(35, 111, 145, 0.16), transparent 38%),
+          var(--bg);
+        color: var(--ink);
+        font-family:
+          Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+          "Segoe UI", sans-serif;
+      }
+
+      button,
+      input,
+      select {
+        font: inherit;
+      }
+
+      button {
+        border: 0;
+        cursor: pointer;
+      }
+
+      .app,
+      .auth-shell {
+        width: min(1180px, calc(100% - 32px));
+        margin: 0 auto;
+      }
+
+      .app {
+        padding: 28px 0 48px;
+      }
+
+      .auth-shell {
+        display: grid;
+        min-height: 100vh;
+        grid-template-columns: minmax(0, 1fr) minmax(330px, 430px);
+        gap: 24px;
+        align-items: center;
+        padding: 32px 0;
+      }
+
+      .auth-intro {
+        min-height: 540px;
+        padding: 34px;
+        border-radius: var(--radius);
+        background:
+          linear-gradient(110deg, rgba(23, 33, 27, 0.88), rgba(23, 33, 27, 0.56)),
+          url("https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&w=1400&q=80")
+            center/cover;
+        box-shadow: var(--shadow);
+        color: #fff;
+      }
+
+      .auth-intro-content {
+        display: flex;
+        min-height: 472px;
+        max-width: 640px;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        min-width: 0;
+      }
+
+      .brand-mark {
+        display: grid;
+        width: 44px;
+        height: 44px;
+        flex: 0 0 auto;
+        place-items: center;
+        border-radius: var(--radius);
+        background: #17211b;
+        color: #fff;
+        font-weight: 900;
+        letter-spacing: 0;
+      }
+
+      .brand-mark svg {
+        width: 30px;
+        height: 30px;
+      }
+
+      .auth-intro .brand-mark {
+        background: rgba(255, 255, 255, 0.16);
+        border: 1px solid rgba(255, 255, 255, 0.28);
+      }
+
+      .brand h1 {
+        margin: 0;
+        font-size: 1.9rem;
+        line-height: 1.05;
+      }
+
+      .brand p {
+        margin: 4px 0 0;
+        color: var(--muted);
+        font-size: 0.95rem;
+      }
+
+      .auth-intro .brand p {
+        color: rgba(255, 255, 255, 0.72);
+      }
+
+      .auth-copy h2 {
+        max-width: 10ch;
+        margin: 0 0 14px;
+        font-size: 4.65rem;
+        line-height: 0.92;
+        letter-spacing: 0;
+      }
+
+      .auth-copy p {
+        max-width: 540px;
+        margin: 0;
+        color: rgba(255, 255, 255, 0.82);
+        font-size: 1.08rem;
+        line-height: 1.58;
+      }
+
+      .security-line {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      .security-pill,
+      .user-pill,
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        min-height: 28px;
+        border-radius: 999px;
+        font-size: 0.76rem;
+        font-weight: 850;
+      }
+
+      .security-pill {
+        gap: 7px;
+        padding: 0 10px;
+        border: 1px solid rgba(255, 255, 255, 0.24);
+        background: rgba(255, 255, 255, 0.13);
+        color: #fff;
+      }
+
+      .security-pill svg,
+      .user-pill svg,
+      .primary-btn svg,
+      .ghost-btn svg,
+      .icon-btn svg,
+      .empty svg {
+        width: 18px;
+        height: 18px;
+        stroke: currentColor;
+        stroke-width: 2;
+        fill: none;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+
+      .auth-card {
+        padding: 22px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: rgba(255, 255, 255, 0.9);
+        box-shadow: var(--shadow);
+        backdrop-filter: blur(10px);
+      }
+
+      .auth-card h2 {
+        margin: 0;
+        font-size: 1.45rem;
+      }
+
+      .auth-card > p {
+        margin: 7px 0 18px;
+        color: var(--muted);
+        line-height: 1.45;
+      }
+
+      .segmented {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 6px;
+        padding: 5px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: var(--surface-soft);
+      }
+
+      .segmented button {
+        min-height: 36px;
+        border-radius: 6px;
+        background: transparent;
+        color: var(--muted);
+        font-weight: 850;
+      }
+
+      .segmented button.active {
+        background: #fff;
+        color: var(--ink);
+        box-shadow: 0 8px 18px rgba(31, 70, 46, 0.1);
+      }
+
+      .auth-form {
+        display: grid;
+        gap: 14px;
+        margin-top: 18px;
+      }
+
+      .auth-message {
+        min-height: 20px;
+        margin: 4px 0 0;
+        color: var(--red);
+        font-size: 0.86rem;
+        font-weight: 750;
+      }
+
+      .topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 22px;
+      }
+
+      .top-actions {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        gap: 10px;
+      }
+
+      .user-pill {
+        gap: 7px;
+        padding: 0 11px;
+        border: 1px solid rgba(47, 125, 83, 0.18);
+        background: rgba(255, 255, 255, 0.72);
+        color: var(--green-dark);
+      }
+
+      .primary-btn,
+      .ghost-btn,
+      .icon-btn {
+        min-height: 42px;
+        border-radius: var(--radius);
+        transition:
+          transform 160ms ease,
+          box-shadow 160ms ease,
+          background 160ms ease;
+      }
+
+      .primary-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 9px;
+        padding: 0 16px;
+        background: var(--green);
+        color: white;
+        font-weight: 750;
+        box-shadow: 0 14px 24px rgba(47, 125, 83, 0.22);
+      }
+
+      .primary-btn:hover {
+        background: var(--green-dark);
+        transform: translateY(-1px);
+      }
+
+      .primary-btn:disabled,
+      .ghost-btn:disabled {
+        cursor: progress;
+        opacity: 0.68;
+        transform: none;
+      }
+
+      .ghost-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 0 13px;
+        background: rgba(255, 255, 255, 0.7);
+        color: var(--ink);
+        border: 1px solid var(--line);
+      }
+
+      .ghost-btn:hover,
+      .icon-btn:hover {
+        background: #fff;
+      }
+
+      .icon-btn {
+        display: inline-grid;
+        width: 38px;
+        height: 38px;
+        min-height: 38px;
+        place-items: center;
+        background: rgba(255, 255, 255, 0.68);
+        color: var(--muted);
+        border: 1px solid var(--line);
+      }
+
+      .hero {
+        display: grid;
+        grid-template-columns: minmax(0, 1.05fr) minmax(320px, 0.95fr);
+        gap: 18px;
+        align-items: stretch;
+        margin-bottom: 18px;
+      }
+
+      .hero-panel {
+        position: relative;
+        overflow: hidden;
+        min-height: 315px;
+        padding: 28px;
+        border-radius: var(--radius);
+        background:
+          linear-gradient(110deg, rgba(23, 33, 27, 0.9), rgba(23, 33, 27, 0.52)),
+          url("https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&w=1400&q=80")
+            center/cover;
+        box-shadow: var(--shadow);
+        color: #fff;
+      }
+
+      .hero-panel::after {
+        position: absolute;
+        right: 24px;
+        bottom: 20px;
+        width: 210px;
+        height: 118px;
+        border: 1px solid rgba(255, 255, 255, 0.26);
+        border-radius: var(--radius);
+        background: rgba(255, 255, 255, 0.1);
+        content: "";
+        backdrop-filter: blur(8px);
+      }
+
+      .hero-content {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        min-height: 258px;
+        max-width: 700px;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+
+      .hero-eyebrow {
+        display: inline-flex;
+        width: fit-content;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 10px;
+        border: 1px solid rgba(255, 255, 255, 0.24);
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.14);
+        font-size: 0.84rem;
+        font-weight: 700;
+      }
+
+      .hero h2 {
+        max-width: 11ch;
+        margin: 16px 0 8px;
+        font-size: 4.7rem;
+        line-height: 0.92;
+        letter-spacing: 0;
+      }
+
+      .hero p {
+        max-width: 560px;
+        margin: 0;
+        color: rgba(255, 255, 255, 0.82);
+        font-size: 1.12rem;
+        line-height: 1.55;
+      }
+
+      .summary {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+      }
+
+      .metric {
+        display: flex;
+        min-height: 98px;
+        flex-direction: column;
+        justify-content: space-between;
+        padding: 16px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: rgba(255, 255, 255, 0.84);
+        box-shadow: 0 12px 34px rgba(31, 70, 46, 0.08);
+        backdrop-filter: blur(8px);
+      }
+
+      .metric span {
+        color: var(--muted);
+        font-size: 0.82rem;
+        font-weight: 750;
+      }
+
+      .metric strong {
+        margin-top: 10px;
+        overflow-wrap: anywhere;
+        font-size: 1.55rem;
+        line-height: 1;
+      }
+
+      .metric small {
+        color: var(--muted);
+      }
+
+      .controls,
+      .charts-grid {
+        display: grid;
+        gap: 12px;
+      }
+
+      .controls {
+        grid-template-columns: minmax(240px, 1fr) minmax(180px, 250px) auto;
+        align-items: end;
+        margin: 20px 0;
+      }
+
+      .field {
+        display: grid;
+        gap: 7px;
+      }
+
+      label {
+        color: var(--muted);
+        font-size: 0.84rem;
+        font-weight: 800;
+      }
+
+      input,
+      select {
+        width: 100%;
+        min-height: 44px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: rgba(255, 255, 255, 0.78);
+        color: var(--ink);
+        outline: 0;
+        padding: 0 12px;
+      }
+
+      input:focus,
+      select:focus {
+        border-color: rgba(47, 125, 83, 0.62);
+        box-shadow: 0 0 0 4px rgba(47, 125, 83, 0.12);
+      }
+
+      .finance-board {
+        display: grid;
+        grid-template-columns: repeat(12, 1fr);
+        gap: 16px;
+        align-items: start;
+      }
+
+      .box-card {
+        grid-column: span 4;
+        overflow: hidden;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: var(--surface);
+        box-shadow: 0 15px 38px rgba(31, 70, 46, 0.1);
+      }
+
+      .box-head {
+        display: grid;
+        gap: 14px;
+        padding: 18px;
+        border-top: 5px solid var(--accent);
+        background:
+          linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0.72)),
+          var(--tint);
+      }
+
+      .box-title-row,
+      .item-row,
+      .box-actions,
+      .modal-actions,
+      .detail-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+      }
+
+      .box-title-row h3 {
+        margin: 0;
+        overflow-wrap: anywhere;
+        font-size: 1.1rem;
+      }
+
+      .box-title-row p {
+        margin: 4px 0 0;
+        color: var(--muted);
+        font-size: 0.88rem;
+      }
+
+      .box-actions {
+        justify-content: flex-start;
+      }
+
+      .money-row {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+      }
+
+      .mini-stat {
+        min-height: 70px;
+        padding: 12px;
+        border: 1px solid rgba(23, 33, 27, 0.08);
+        border-radius: var(--radius);
+        background: rgba(255, 255, 255, 0.64);
+      }
+
+      .mini-stat span {
+        display: block;
+        color: var(--muted);
+        font-size: 0.76rem;
+        font-weight: 800;
+      }
+
+      .mini-stat strong {
+        display: block;
+        margin-top: 8px;
+        overflow-wrap: anywhere;
+        font-size: 1.05rem;
+      }
+
+      .progress {
+        width: 100%;
+        height: 10px;
+        overflow: hidden;
+        border-radius: 999px;
+        background: rgba(23, 33, 27, 0.1);
+      }
+
+      .progress span {
+        display: block;
+        width: min(var(--progress), 100%);
+        height: 100%;
+        border-radius: inherit;
+        background: var(--accent);
+      }
+
+      .status-line {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        color: var(--muted);
+        font-size: 0.82rem;
+        font-weight: 750;
+      }
+
+      .item-list {
+        display: grid;
+        gap: 10px;
+        padding: 14px;
+      }
+
+      .item-row {
+        align-items: flex-start;
+        min-height: 68px;
+        padding: 12px;
+        border: 1px solid rgba(23, 33, 27, 0.08);
+        border-radius: var(--radius);
+        background: #fff;
+      }
+
+      .item-main {
+        min-width: 0;
+      }
+
+      .item-main strong {
+        display: block;
+        overflow-wrap: anywhere;
+        font-size: 0.96rem;
+      }
+
+      .item-main span {
+        display: block;
+        margin-top: 5px;
+        color: var(--muted);
+        font-size: 0.82rem;
+      }
+
+      .item-value {
+        display: grid;
+        justify-items: end;
+        gap: 7px;
+        flex: 0 0 auto;
+      }
+
+      .item-value strong {
+        font-size: 0.96rem;
+      }
+
+      .pill {
+        min-height: 24px;
+        padding: 0 8px;
+        background: var(--surface-soft);
+        color: var(--green-dark);
+        font-size: 0.72rem;
+      }
+
+      .pill.danger {
+        background: rgba(184, 75, 69, 0.12);
+        color: var(--red);
+      }
+
+      .empty {
+        display: grid;
+        min-height: 150px;
+        place-items: center;
+        gap: 10px;
+        padding: 22px;
+        color: var(--muted);
+        text-align: center;
+      }
+
+      .empty svg {
+        width: 28px;
+        height: 28px;
+      }
+
+      .toast {
+        position: fixed;
+        right: 18px;
+        bottom: 18px;
+        z-index: 20;
+        max-width: min(360px, calc(100vw - 36px));
+        padding: 12px 14px;
+        border: 1px solid rgba(47, 125, 83, 0.2);
+        border-radius: var(--radius);
+        background: #fff;
+        box-shadow: var(--shadow);
+        color: var(--ink);
+        font-weight: 760;
+      }
+
+      .modal-backdrop {
+        position: fixed;
+        inset: 0;
+        z-index: 10;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 18px;
+        background: rgba(23, 33, 27, 0.48);
+        backdrop-filter: blur(6px);
+      }
+
+      .modal-backdrop.open {
+        display: flex;
+      }
+
+      .modal {
+        width: min(520px, 100%);
+        max-height: min(760px, calc(100vh - 36px));
+        overflow: auto;
+        border-radius: var(--radius);
+        background: var(--surface);
+        box-shadow: var(--shadow);
+      }
+
+      .modal header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 18px 18px 0;
+      }
+
+      .modal h3 {
+        margin: 0;
+        font-size: 1.2rem;
+      }
+
+      .modal form {
+        display: grid;
+        gap: 14px;
+        padding: 18px;
+      }
+
+      .form-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+      }
+
+      .span-2 {
+        grid-column: span 2;
+      }
+
+      .swatches {
+        display: grid;
+        grid-template-columns: repeat(6, 36px);
+        gap: 9px;
+      }
+
+      .swatch {
+        width: 36px;
+        height: 36px;
+        border: 2px solid transparent;
+        border-radius: var(--radius);
+        background: var(--swatch);
+      }
+
+      .swatch.active {
+        border-color: #17211b;
+        box-shadow: 0 0 0 3px rgba(23, 33, 27, 0.1);
+      }
+
+      .modal-actions {
+        justify-content: flex-end;
+        padding-top: 8px;
+      }
+
+      .danger-text {
+        color: var(--red);
+      }
+
+      @media (max-width: 1030px) {
+        .auth-shell,
+        .hero,
+        .charts-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .auth-intro {
+          min-height: 430px;
+        }
+
+        .auth-intro-content {
+          min-height: 362px;
+        }
+
+        .hero h2,
+        .auth-copy h2 {
+          font-size: 3.7rem;
+        }
+
+        .box-card {
+          grid-column: span 6;
+        }
+      }
+
+      @media (max-width: 720px) {
+        .app,
+        .auth-shell {
+          width: min(100% - 22px, 1180px);
+        }
+
+        .app {
+          padding-top: 18px;
+        }
+
+        .auth-shell {
+          padding: 18px 0 34px;
+        }
+
+        .auth-intro {
+          min-height: 390px;
+          padding: 22px;
+        }
+
+        .auth-intro-content {
+          min-height: 336px;
+        }
+
+        .topbar,
+        .controls {
+          grid-template-columns: 1fr;
+        }
+
+        .topbar {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+
+        .top-actions {
+          width: 100%;
+          justify-content: flex-start;
+        }
+
+        .hero-panel {
+          min-height: 330px;
+          padding: 22px;
+        }
+
+        .brand h1 {
+          font-size: 1.45rem;
+        }
+
+        .hero h2,
+        .auth-copy h2 {
+          font-size: 2.75rem;
+        }
+
+        .hero p,
+        .auth-copy p {
+          font-size: 1rem;
+        }
+
+        .hero-panel::after {
+          right: 14px;
+          bottom: 14px;
+          width: 150px;
+          height: 84px;
+        }
+
+        .summary,
+        .money-row,
+        .form-grid,
+        .chart-row,
+        .box-chart-row {
+          grid-template-columns: 1fr;
+        }
+
+        .chart-value,
+        .box-chart-value {
+          justify-self: start;
+          text-align: left;
+        }
+
+        .span-2 {
+          grid-column: auto;
+        }
+
+        .box-card {
+          grid-column: span 12;
+        }
+
+        .swatches {
+          grid-template-columns: repeat(6, minmax(30px, 36px));
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <section class="auth-shell" id="authView" aria-label="Acesso">
+      <div class="auth-intro">
+        <div class="auth-intro-content">
+          <div class="brand">
+            <div class="brand-mark" aria-hidden="true">
+              <svg viewBox="0 0 64 64">
+                <rect x="7" y="9" width="50" height="46" rx="13" fill="#b8dfc3"></rect>
+                <path d="M18 39 28 28l9 8 10-14" fill="none" stroke="#17211b" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"></path>
+                <path d="M17 46h30" stroke="#2f7d53" stroke-width="5" stroke-linecap="round"></path>
+              </svg>
+            </div>
+            <div>
+              <h1>Expense Management</h1>
+              <p>Organize cada parte do seu dinheiro com clareza.</p>
+            </div>
+          </div>
+
+          <div class="auth-copy">
+            <h2>Seu mês em ordem</h2>
+            <p>
+              Cada pessoa entra com seu próprio usuário e abre somente as suas
+              caixinhas neste aparelho.
+            </p>
+          </div>
+
+          <div class="security-line" aria-label="Recursos de segurança">
+            <span class="security-pill">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M12 3l7 4v5c0 5-3.3 8.2-7 9-3.7-.8-7-4-7-9V7Z"></path>
+                <path d="M9.5 12.5l1.7 1.7 3.5-4"></path>
+              </svg>
+              Senha protegida
+            </span>
+            <span class="security-pill">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <rect x="4" y="11" width="16" height="9" rx="2"></rect>
+                <path d="M8 11V8a4 4 0 0 1 8 0v3"></path>
+              </svg>
+              Dados criptografados
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div class="auth-card">
+        <div class="segmented" role="tablist" aria-label="Tipo de acesso">
+          <button class="active" id="loginTab" type="button" role="tab" aria-controls="loginForm">
+            Entrar
+          </button>
+          <button id="registerTab" type="button" role="tab" aria-controls="registerForm">
+            Criar conta
+          </button>
+        </div>
+
+        <form class="auth-form" id="loginForm">
+          <div>
+            <h2>Entrar</h2>
+            <p>Abra seu painel financeiro.</p>
+          </div>
+          <div class="field">
+            <label for="loginUser">Usuário</label>
+            <input id="loginUser" autocomplete="username" required />
+          </div>
+          <div class="field">
+            <label for="loginPassword">Senha</label>
+            <input id="loginPassword" autocomplete="current-password" required type="password" />
+          </div>
+          <button class="primary-btn" id="loginSubmit" type="submit">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
+              <path d="M10 17l5-5-5-5"></path>
+              <path d="M15 12H3"></path>
+            </svg>
+            Entrar
+          </button>
+        </form>
+
+        <form class="auth-form" id="registerForm" hidden>
+          <div>
+            <h2>Criar conta</h2>
+            <p>Crie um acesso para separar suas caixinhas.</p>
+          </div>
+          <div class="field">
+            <label for="registerName">Nome</label>
+            <input id="registerName" autocomplete="name" maxlength="40" required />
+          </div>
+          <div class="field">
+            <label for="registerUser">Usuário</label>
+            <input id="registerUser" autocomplete="username" maxlength="32" required />
+          </div>
+          <div class="field">
+            <label for="registerPassword">Senha</label>
+            <input id="registerPassword" autocomplete="new-password" minlength="8" required type="password" />
+          </div>
+          <div class="field">
+            <label for="registerConfirm">Confirmar senha</label>
+            <input id="registerConfirm" autocomplete="new-password" minlength="8" required type="password" />
+          </div>
+          <button class="primary-btn" id="registerSubmit" type="submit">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+              <circle cx="9" cy="7" r="4"></circle>
+              <path d="M19 8v6"></path>
+              <path d="M22 11h-6"></path>
+            </svg>
+            Criar conta
+          </button>
+        </form>
+
+        <p class="auth-message" id="authMessage" aria-live="polite"></p>
+      </div>
+    </section>
+
+    <main class="app" id="appView" hidden>
+      <header class="topbar">
+        <div class="brand">
+          <div class="brand-mark" aria-hidden="true">
+            <svg viewBox="0 0 64 64">
+              <rect x="7" y="9" width="50" height="46" rx="13" fill="#b8dfc3"></rect>
+              <path d="M18 39 28 28l9 8 10-14" fill="none" stroke="#17211b" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"></path>
+              <path d="M17 46h30" stroke="#2f7d53" stroke-width="5" stroke-linecap="round"></path>
+            </svg>
+          </div>
+          <div>
+            <h1>Expense Management</h1>
+            <p>Organize cada parte do seu dinheiro com clareza.</p>
+          </div>
+        </div>
+        <div class="top-actions">
+          <span class="user-pill" id="sessionUser">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M20 21a8 8 0 0 0-16 0"></path>
+              <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+            Usuário
+          </span>
+          <button class="ghost-btn" id="logoutBtn" type="button">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
+              <path d="M10 17l5-5-5-5"></path>
+              <path d="M15 12H3"></path>
+            </svg>
+            Sair
+          </button>
+          <button class="primary-btn" id="newBoxBtn" type="button">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 5v14M5 12h14"></path>
+            </svg>
+            Nova caixinha
+          </button>
+        </div>
+      </header>
+
+      <section class="hero" aria-label="Resumo financeiro">
+        <div class="hero-panel">
+          <div class="hero-content">
+            <div>
+              <span class="hero-eyebrow">Painel financeiro pessoal</span>
+              <h2>Seu mês em ordem</h2>
+              <p>
+                Separe contas fixas, gastos mensais, reserva e metas em caixinhas.
+                O painel calcula quanto já foi reservado, quanto falta pagar e
+                quanto você guardou no mês.
+              </p>
+            </div>
+            <button class="ghost-btn" id="quickStartBtn" type="button">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M4 12h16"></path>
+                <path d="M13 5l7 7-7 7"></path>
+              </svg>
+              Começar pelo essencial
+            </button>
+          </div>
+        </div>
+
+        <div class="summary">
+          <article class="metric">
+            <span>Renda do mês</span>
+            <strong id="incomeMetric">R$ 0,00</strong>
+            <small>Editável no campo abaixo</small>
+          </article>
+          <article class="metric">
+            <span>Total planejado</span>
+            <strong id="plannedMetric">R$ 0,00</strong>
+            <small>Somando todas as caixinhas</small>
+          </article>
+          <article class="metric">
+            <span>Contas a pagar</span>
+            <strong id="payableMetric">R$ 0,00</strong>
+            <small>Fixo e mensal ainda abertos</small>
+          </article>
+          <article class="metric">
+            <span>Guardado no mês</span>
+            <strong id="savedMetric">R$ 0,00</strong>
+            <small>Reservas marcadas como pagas</small>
+          </article>
+          <article class="metric">
+            <span>Já pago ou reservado</span>
+            <strong id="spentMetric">R$ 0,00</strong>
+            <small>Lançamentos concluídos</small>
+          </article>
+          <article class="metric">
+            <span>Saldo livre</span>
+            <strong id="freeMetric">R$ 0,00</strong>
+            <small>Depois do planejado</small>
+          </article>
+        </div>
+      </section>
+
+      <section class="controls" aria-label="Controles do painel">
+        <div class="field">
+          <label for="incomeInput">Renda mensal</label>
+          <input id="incomeInput" inputmode="decimal" placeholder="Ex: 3500" />
+        </div>
+        <div class="field">
+          <label for="filterSelect">Mostrar</label>
+          <select id="filterSelect">
+            <option value="all">Todas as caixinhas</option>
+            <option value="fixed">Contas fixas</option>
+            <option value="monthly">Contas mensais</option>
+            <option value="reserve">Reserva e metas</option>
+          </select>
+        </div>
+        <button class="ghost-btn" id="exportBtn" type="button">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <path d="M7 10l5 5 5-5"></path>
+            <path d="M12 15V3"></path>
+          </svg>
+          Exportar
+        </button>
+      </section>
+
+      <section class="charts-grid" aria-label="Gráficos das caixinhas">
+        <article class="chart-panel">
+          <div class="section-title">
+            <div>
+              <span>Visão do mês</span>
+              <h2>Contas e reserva</h2>
+            </div>
+            <div class="chart-icon">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M4 19V5"></path>
+                <path d="M4 19h16"></path>
+                <path d="M8 16v-5"></path>
+                <path d="M13 16V8"></path>
+                <path d="M18 16v-9"></path>
+              </svg>
+            </div>
+          </div>
+          <div class="month-chart" id="monthChart"></div>
+        </article>
+
+        <article class="chart-panel">
+          <div class="section-title">
+            <div>
+              <span>Por caixinha</span>
+              <h2>Planejado x realizado</h2>
+            </div>
+            <div class="chart-icon">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M3 3v18h18"></path>
+                <path d="M7 15l4-4 3 3 5-7"></path>
+              </svg>
+            </div>
+          </div>
+          <div class="box-chart" id="boxChart"></div>
+        </article>
+      </section>
+
+      <section class="finance-board" id="board" aria-live="polite"></section>
+    </main>
+
+    <div class="modal-backdrop" id="boxModal" role="dialog" aria-modal="true" aria-labelledby="boxModalTitle">
+      <div class="modal">
+        <header>
+          <h3 id="boxModalTitle">Nova caixinha</h3>
+          <button class="icon-btn" id="closeBoxModal" type="button" aria-label="Fechar">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M18 6L6 18M6 6l12 12"></path>
+            </svg>
+          </button>
+        </header>
+        <form id="boxForm">
+          <input id="boxId" type="hidden" />
+          <div class="form-grid">
+            <div class="field span-2">
+              <label for="boxName">Nome</label>
+              <input id="boxName" required maxlength="32" placeholder="Ex: Contas fixas" />
+            </div>
+            <div class="field">
+              <label for="boxType">Tipo</label>
+              <select id="boxType">
+                <option value="fixed">Contas fixas</option>
+                <option value="monthly">Contas mensais</option>
+                <option value="reserve">Reserva e metas</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="boxGoal">Valor planejado</label>
+              <input id="boxGoal" inputmode="decimal" placeholder="Ex: 1200" />
+            </div>
+            <div class="field span-2">
+              <label>Cor</label>
+              <div class="swatches" id="swatches"></div>
+            </div>
+          </div>
+          <div class="modal-actions">
+            <button class="ghost-btn" id="cancelBox" type="button">Cancelar</button>
+            <button class="primary-btn" type="submit">Salvar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div class="modal-backdrop" id="itemModal" role="dialog" aria-modal="true" aria-labelledby="itemModalTitle">
+      <div class="modal">
+        <header>
+          <h3 id="itemModalTitle">Novo lançamento</h3>
+          <button class="icon-btn" id="closeItemModal" type="button" aria-label="Fechar">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M18 6L6 18M6 6l12 12"></path>
+            </svg>
+          </button>
+        </header>
+        <form id="itemForm">
+          <input id="itemBoxId" type="hidden" />
+          <input id="itemId" type="hidden" />
+          <div class="form-grid">
+            <div class="field span-2">
+              <label for="itemName">Descrição</label>
+              <input id="itemName" required maxlength="40" placeholder="Ex: Energia" />
+            </div>
+            <div class="field">
+              <label for="itemAmount">Valor</label>
+              <input id="itemAmount" inputmode="decimal" required placeholder="Ex: 180" />
+            </div>
+            <div class="field">
+              <label for="itemDue">Vencimento</label>
+              <input id="itemDue" type="date" />
+            </div>
+            <div class="field span-2">
+              <label for="itemStatus">Status</label>
+              <select id="itemStatus">
+                <option value="planned">Planejado</option>
+                <option value="paid">Pago ou reservado</option>
+              </select>
+            </div>
+          </div>
+          <div class="modal-actions">
+            <button class="ghost-btn" id="cancelItem" type="button">Cancelar</button>
+            <button class="primary-btn" type="submit">Salvar lançamento</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div id="toast" class="toast" hidden></div>
+
+    <script>
+      const AUTH_STORAGE_KEY = "expense-management-auth-v1";
+      const LEGACY_AUTH_STORAGE_KEY = "thiago-caixinhas-auth-v2";
+      const LEGACY_DATA_STORAGE_KEY = "thiago-caixinhas-financeiras";
+      const AUTH_ITERATIONS = 210000;
+      const BRL = new Intl.NumberFormat("pt-BR", {
+        style: "currency",
+        currency: "BRL"
+      });
+
+      const encoder = new TextEncoder();
+      const decoder = new TextDecoder();
+
+      const colors = [
+        "#2f7d53",
+        "#236f91",
+        "#d89d26",
+        "#b84b45",
+        "#7355a3",
+        "#4a7c7f"
+      ];
+
+      const typeLabels = {
+        fixed: "Contas fixas",
+        monthly: "Contas mensais",
+        reserve: "Reserva e metas"
+      };
+
+      let authStore = loadAuthStore();
+      let session = { user: null, key: null };
+      let state = null;
+      let currentColor = colors[0];
+      let saveTimer = 0;
+
+      const els = {
+        authView: document.querySelector("#authView"),
+        appView: document.querySelector("#appView"),
+        loginTab: document.querySelector("#loginTab"),
+        registerTab: document.querySelector("#registerTab"),
+        loginForm: document.querySelector("#loginForm"),
+        registerForm: document.querySelector("#registerForm"),
+        loginUser: document.querySelector("#loginUser"),
+        loginPassword: document.querySelector("#loginPassword"),
+        registerName: document.querySelector("#registerName"),
+        registerUser: document.querySelector("#registerUser"),
+        registerPassword: document.querySelector("#registerPassword"),
+        registerConfirm: document.querySelector("#registerConfirm"),
+        authMessage: document.querySelector("#authMessage"),
+        loginSubmit: document.querySelector("#loginSubmit"),
+        registerSubmit: document.querySelector("#registerSubmit"),
+        sessionUser: document.querySelector("#sessionUser"),
+        logoutBtn: document.querySelector("#logoutBtn"),
+        board: document.querySelector("#board"),
+        monthChart: document.querySelector("#monthChart"),
+        boxChart: document.querySelector("#boxChart"),
+        incomeMetric: document.querySelector("#incomeMetric"),
+        plannedMetric: document.querySelector("#plannedMetric"),
+        payableMetric: document.querySelector("#payableMetric"),
+        savedMetric: document.querySelector("#savedMetric"),
+        spentMetric: document.querySelector("#spentMetric"),
+        freeMetric: document.querySelector("#freeMetric"),
+        incomeInput: document.querySelector("#incomeInput"),
+        filterSelect: document.querySelector("#filterSelect"),
+        newBoxBtn: document.querySelector("#newBoxBtn"),
+        quickStartBtn: document.querySelector("#quickStartBtn"),
+        exportBtn: document.querySelector("#exportBtn"),
+        toast: document.querySelector("#toast"),
+        boxModal: document.querySelector("#boxModal"),
+        boxForm: document.querySelector("#boxForm"),
+        boxId: document.querySelector("#boxId"),
+        boxName: document.querySelector("#boxName"),
+        boxType: document.querySelector("#boxType"),
+        boxGoal: document.querySelector("#boxGoal"),
+        boxModalTitle: document.querySelector("#boxModalTitle"),
+        swatches: document.querySelector("#swatches"),
+        itemModal: document.querySelector("#itemModal"),
+        itemForm: document.querySelector("#itemForm"),
+        itemBoxId: document.querySelector("#itemBoxId"),
+        itemId: document.querySelector("#itemId"),
+        itemName: document.querySelector("#itemName"),
+        itemAmount: document.querySelector("#itemAmount"),
+        itemDue: document.querySelector("#itemDue"),
+        itemStatus: document.querySelector("#itemStatus"),
+        itemModalTitle: document.querySelector("#itemModalTitle")
+      };
+
+      wireEvents();
+      renderSwatches();
+      showAuthView(authStore.users.length ? "login" : "register");
+
+      function wireEvents() {
+        els.loginTab.addEventListener("click", () => setAuthMode("login"));
+        els.registerTab.addEventListener("click", () => setAuthMode("register"));
+        els.loginForm.addEventListener("submit", handleLogin);
+        els.registerForm.addEventListener("submit", handleRegister);
+        els.logoutBtn.addEventListener("click", handleLogout);
+        document.querySelector("#closeBoxModal").addEventListener("click", closeBoxModal);
+        document.querySelector("#cancelBox").addEventListener("click", closeBoxModal);
+        document.querySelector("#closeItemModal").addEventListener("click", closeItemModal);
+        document.querySelector("#cancelItem").addEventListener("click", closeItemModal);
+
+        els.newBoxBtn.addEventListener("click", () => openBoxModal());
+        els.quickStartBtn.addEventListener("click", createEssentialBoxes);
+        els.exportBtn.addEventListener("click", exportData);
+        els.filterSelect.addEventListener("change", render);
+        els.incomeInput.addEventListener("input", () => {
+          if (!state) return;
+          state.income = parseMoney(els.incomeInput.value);
+          queueSaveState();
+          render();
+        });
+
+        els.boxModal.addEventListener("click", (event) => {
+          if (event.target === els.boxModal) closeBoxModal();
+        });
+
+        els.itemModal.addEventListener("click", (event) => {
+          if (event.target === els.itemModal) closeItemModal();
+        });
+
+        document.addEventListener("keydown", (event) => {
+          if (event.key !== "Escape") return;
+          closeBoxModal();
+          closeItemModal();
+        });
+
+        els.boxForm.addEventListener("submit", handleBoxSubmit);
+        els.itemForm.addEventListener("submit", handleItemSubmit);
+      }
+
+      async function handleLogin(event) {
+        event.preventDefault();
+        if (!isCryptoReady()) return showAuthError("Seu navegador não liberou a criptografia local.");
+
+        const username = normalizeUser(els.loginUser.value);
+        const password = els.loginPassword.value;
+        const user = findUser(username);
+
+        if (!user || !password) {
+          showAuthError("Usuário ou senha inválidos.");
+          return;
+        }
+
+        setAuthBusy(true);
+        try {
+          const auth = await deriveAuth(password, user.salt);
+          if (auth.verifier !== user.verifier) {
+            showAuthError("Usuário ou senha inválidos.");
+            return;
+          }
+
+          const decrypted = user.data ? await decryptState(user.data, auth.key) : createDefaultState();
+          session = { user, key: auth.key };
+          state = normalizeState(decrypted);
+          showAppView();
+          render();
+          showToast("Login feito com segurança.");
+        } catch {
+          showAuthError("Não foi possível abrir essa conta.");
+        } finally {
+          setAuthBusy(false);
+          els.loginPassword.value = "";
+        }
+      }
+
+      async function handleRegister(event) {
+        event.preventDefault();
+        if (!isCryptoReady()) return showAuthError("Seu navegador não liberou a criptografia local.");
+
+        const name = els.registerName.value.trim();
+        const username = normalizeUser(els.registerUser.value);
+        const password = els.registerPassword.value;
+        const confirm = els.registerConfirm.value;
+
+        if (!name || !username || !password) {
+          showAuthError("Preencha todos os campos.");
+          return;
+        }
+
+        if (password.length < 8) {
+          showAuthError("Use uma senha com pelo menos 8 caracteres.");
+          return;
+        }
+
+        if (password !== confirm) {
+          showAuthError("As senhas não conferem.");
+          return;
+        }
+
+        if (findUser(username)) {
+          showAuthError("Esse usuário já existe neste aparelho.");
+          return;
+        }
+
+        setAuthBusy(true);
+        try {
+          const salt = randomBytes(16);
+          const auth = await deriveAuth(password, salt);
+          const firstAccount = authStore.users.length === 0;
+          const initialState = firstAccount ? getLegacyState() || createDefaultState() : createDefaultState();
+          const user = {
+            id: randomId(),
+            name,
+            username,
+            salt: bytesToBase64(salt),
+            verifier: auth.verifier,
+            data: await encryptState(initialState, auth.key),
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString()
+          };
+
+          authStore.users.push(user);
+          saveAuthStore();
+          session = { user, key: auth.key };
+          state = normalizeState(initialState);
+          showAppView();
+          render();
+          showToast(firstAccount && getLegacyState() ? "Conta criada e dados antigos importados." : "Conta criada.");
+        } catch {
+          showAuthError("Não foi possível criar essa conta.");
+        } finally {
+          setAuthBusy(false);
+          els.registerForm.reset();
+        }
+      }
+
+      async function handleLogout() {
+        window.clearTimeout(saveTimer);
+        await saveCurrentState();
+        session = { user: null, key: null };
+        state = null;
+        showAuthView("login");
+        showAuthError("");
+      }
+
+      async function handleBoxSubmit(event) {
+        event.preventDefault();
+        if (!state) return;
+
+        const id = els.boxId.value;
+        const payload = {
+          name: els.boxName.value.trim(),
+          type: els.boxType.value,
+          goal: parseMoney(els.boxGoal.value),
+          color: currentColor
+        };
+
+        if (!payload.name) return;
+
+        if (id) {
+          const box = state.boxes.find((item) => item.id === id);
+          if (box) Object.assign(box, payload);
+          showToast("Caixinha atualizada.");
+        } else {
+          state.boxes.push({
+            id: randomId(),
+            ...payload,
+            items: []
+          });
+          showToast("Caixinha criada.");
+        }
+
+        await saveCurrentState();
+        closeBoxModal();
+        render();
+      }
+
+      async function handleItemSubmit(event) {
+        event.preventDefault();
+        if (!state) return;
+
+        const box = state.boxes.find((item) => item.id === els.itemBoxId.value);
+        if (!box) return;
+
+        const id = els.itemId.value;
+        const payload = {
+          name: els.itemName.value.trim(),
+          amount: parseMoney(els.itemAmount.value),
+          due: els.itemDue.value,
+          status: els.itemStatus.value
+        };
+
+        if (!payload.name || payload.amount <= 0) return;
+
+        if (id) {
+          const item = box.items.find((entry) => entry.id === id);
+          if (item) Object.assign(item, payload);
+          showToast("Lançamento atualizado.");
+        } else {
+          box.items.push({ id: randomId(), ...payload });
+          showToast("Lançamento adicionado.");
+        }
+
+        await saveCurrentState();
+        closeItemModal();
+        render();
+      }
+
+      function showAuthView(mode = "login") {
+        els.authView.hidden = false;
+        els.appView.hidden = true;
+        document.body.classList.remove("app-mode");
+        document.body.classList.add("auth-mode");
+        setAuthMode(mode);
+      }
+
+      function showAppView() {
+        els.authView.hidden = true;
+        els.appView.hidden = false;
+        document.body.classList.remove("auth-mode");
+        document.body.classList.add("app-mode");
+        els.sessionUser.innerHTML = `
+          ${icon("user")}
+          ${escapeHtml(session.user?.name || "Usuário")}
+        `;
+      }
+
+      function setAuthMode(mode) {
+        const isLogin = mode === "login";
+        els.loginForm.hidden = !isLogin;
+        els.registerForm.hidden = isLogin;
+        els.loginTab.classList.toggle("active", isLogin);
+        els.registerTab.classList.toggle("active", !isLogin);
+        showAuthError("");
+        window.setTimeout(() => {
+          (isLogin ? els.loginUser : els.registerName).focus();
+        }, 0);
+      }
+
+      function setAuthBusy(isBusy) {
+        els.loginSubmit.disabled = isBusy;
+        els.registerSubmit.disabled = isBusy;
+      }
+
+      function showAuthError(message) {
+        els.authMessage.textContent = message;
+      }
+
+      function loadAuthStore() {
+        const fallback = { version: 2, users: [] };
+        const saved = localStorage.getItem(AUTH_STORAGE_KEY) || localStorage.getItem(LEGACY_AUTH_STORAGE_KEY);
+        if (!saved) return fallback;
+
+        try {
+          const parsed = JSON.parse(saved);
+          const store = {
+            version: 2,
+            users: Array.isArray(parsed.users) ? parsed.users : []
+          };
+          if (!localStorage.getItem(AUTH_STORAGE_KEY)) {
+            localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(store));
+          }
+          return store;
+        } catch {
+          return fallback;
+        }
+      }
+
+      function saveAuthStore() {
+        localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(authStore));
+      }
+
+      function findUser(username) {
+        return authStore.users.find((user) => user.username === normalizeUser(username));
+      }
+
+      function normalizeUser(value) {
+        return String(value || "").trim().toLowerCase();
+      }
+
+      function isCryptoReady() {
+        return Boolean(window.crypto?.subtle && window.crypto?.getRandomValues);
+      }
+
+      async function deriveAuth(password, saltSource) {
+        const salt = typeof saltSource === "string" ? base64ToBytes(saltSource) : saltSource;
+        const material = await crypto.subtle.importKey(
+          "raw",
+          encoder.encode(password),
+          "PBKDF2",
+          false,
+          ["deriveBits"]
+        );
+        const bits = await crypto.subtle.deriveBits(
+          {
+            name: "PBKDF2",
+            hash: "SHA-256",
+            salt,
+            iterations: AUTH_ITERATIONS
+          },
+          material,
+          512
+        );
+        const bytes = new Uint8Array(bits);
+        const verifier = bytesToBase64(bytes.slice(0, 32));
+        const key = await crypto.subtle.importKey(
+          "raw",
+          bytes.slice(32),
+          { name: "AES-GCM" },
+          false,
+          ["encrypt", "decrypt"]
+        );
+        return { verifier, key };
+      }
+
+      async function encryptState(value, key) {
+        const iv = randomBytes(12);
+        const encrypted = await crypto.subtle.encrypt(
+          { name: "AES-GCM", iv },
+          key,
+          encoder.encode(JSON.stringify(normalizeState(value)))
+        );
+        return {
+          iv: bytesToBase64(iv),
+          value: bytesToBase64(new Uint8Array(encrypted))
+        };
+      }
+
+      async function decryptState(payload, key) {
+        const decrypted = await crypto.subtle.decrypt(
+          { name: "AES-GCM", iv: base64ToBytes(payload.iv) },
+          key,
+          base64ToBytes(payload.value)
+        );
+        return JSON.parse(decoder.decode(decrypted));
+      }
+
+      async function saveCurrentState() {
+        if (!session.user || !session.key || !state) return;
+        session.user.data = await encryptState(state, session.key);
+        session.user.updatedAt = new Date().toISOString();
+        saveAuthStore();
+      }
+
+      function queueSaveState() {
+        window.clearTimeout(saveTimer);
+        saveTimer = window.setTimeout(() => {
+          saveCurrentState().catch(() => showToast("Não foi possível salvar agora."));
+        }, 260);
+      }
+
+      function getLegacyState() {
+        const saved = localStorage.getItem(LEGACY_DATA_STORAGE_KEY);
+        if (!saved) return null;
+
+        try {
+          return normalizeState(JSON.parse(saved));
+        } catch {
+          return null;
+        }
+      }
+
+      function createDefaultState() {
+        return {
+          income: 3500,
+          boxes: [
+            {
+              id: randomId(),
+              name: "Contas fixas",
+              type: "fixed",
+              goal: 1450,
+              color: "#2f7d53",
+              items: [
+                { id: randomId(), name: "Aluguel", amount: 950, due: "", status: "paid" },
+                { id: randomId(), name: "Internet", amount: 110, due: "", status: "planned" },
+                { id: randomId(), name: "Energia", amount: 180, due: "", status: "planned" }
+              ]
+            },
+            {
+              id: randomId(),
+              name: "Contas mensais",
+              type: "monthly",
+              goal: 780,
+              color: "#236f91",
+              items: [
+                { id: randomId(), name: "Mercado", amount: 520, due: "", status: "paid" },
+                { id: randomId(), name: "Transporte", amount: 160, due: "", status: "planned" }
+              ]
+            },
+            {
+              id: randomId(),
+              name: "Reserva",
+              type: "reserve",
+              goal: 500,
+              color: "#d89d26",
+              items: [
+                { id: randomId(), name: "Guardar este mês", amount: 300, due: "", status: "paid" }
+              ]
+            }
+          ]
+        };
+      }
+
+      function normalizeState(input) {
+        const source = input && typeof input === "object" ? input : createDefaultState();
+        const boxes = Array.isArray(source.boxes) ? source.boxes : createDefaultState().boxes;
+        return {
+          income: Number.isFinite(Number(source.income)) ? Number(source.income) : 0,
+          boxes: boxes.map((box) => ({
+            id: box.id || randomId(),
+            name: String(box.name || "Caixinha").slice(0, 32),
+            type: typeLabels[box.type] ? box.type : "monthly",
+            goal: Number.isFinite(Number(box.goal)) ? Number(box.goal) : 0,
+            color: colors.includes(box.color) ? box.color : colors[0],
+            items: Array.isArray(box.items)
+              ? box.items.map((item) => ({
+                  id: item.id || randomId(),
+                  name: String(item.name || "Lançamento").slice(0, 40),
+                  amount: Number.isFinite(Number(item.amount)) ? Number(item.amount) : 0,
+                  due: item.due || "",
+                  status: item.status === "paid" ? "paid" : "planned"
+                }))
+              : []
+          }))
+        };
+      }
+
+      function parseMoney(value) {
+        if (typeof value === "number") return value;
+        const raw = String(value || "").replace(/[^\d,.-]/g, "");
+        const dotCount = (raw.match(/\./g) || []).length;
+        let normalized = raw;
+
+        if (raw.includes(",")) {
+          normalized = raw.replace(/\./g, "").replace(",", ".");
+        } else if (dotCount > 1) {
+          normalized = raw.replace(/\./g, "");
+        } else if (dotCount === 1) {
+          const [before, after] = raw.split(".");
+          normalized = after.length === 3 && before.length <= 3 ? `${before}${after}` : raw;
+        }
+
+        const number = Number.parseFloat(normalized);
+        return Number.isFinite(number) ? number : 0;
+      }
+
+      function formatDate(value) {
+        if (!value) return "Sem vencimento";
+        const [year, month, day] = value.split("-");
+        return `${day}/${month}/${year}`;
+      }
+
+      function getBoxTotals(box) {
+        const listed = box.items.reduce((total, item) => total + item.amount, 0);
+        const planned = box.goal || listed;
+        const used = box.items
+          .filter((item) => item.status === "paid")
+          .reduce((total, item) => total + item.amount, 0);
+        return { planned, used, listed };
+      }
+
+      function getDashboardSummary() {
+        return state.boxes.reduce(
+          (summary, box) => {
+            const totals = getBoxTotals(box);
+            const remaining = Math.max(totals.planned - totals.used, 0);
+
+            summary.totalPlanned += totals.planned;
+            summary.totalUsed += totals.used;
+
+            if (box.type === "reserve") {
+              summary.reservePlanned += totals.planned;
+              summary.reserveSaved += totals.used;
+              summary.reserveRemaining += remaining;
+            } else {
+              summary.billsPlanned += totals.planned;
+              summary.billsPaid += totals.used;
+              summary.billsToPay += remaining;
+            }
+
+            return summary;
+          },
+          {
+            totalPlanned: 0,
+            totalUsed: 0,
+            billsPlanned: 0,
+            billsPaid: 0,
+            billsToPay: 0,
+            reservePlanned: 0,
+            reserveSaved: 0,
+            reserveRemaining: 0
+          }
+        );
+      }
+
+      function render() {
+        if (!state) return;
+
+        const summary = getDashboardSummary();
+        const free = state.income - summary.totalPlanned;
+        if (document.activeElement !== els.incomeInput) {
+          els.incomeInput.value = state.income ? state.income.toLocaleString("pt-BR") : "";
+        }
+
+        els.incomeMetric.textContent = BRL.format(state.income);
+        els.plannedMetric.textContent = BRL.format(summary.totalPlanned);
+        els.payableMetric.textContent = BRL.format(summary.billsToPay);
+        els.savedMetric.textContent = BRL.format(summary.reserveSaved);
+        els.spentMetric.textContent = BRL.format(summary.totalUsed);
+        els.freeMetric.textContent = BRL.format(free);
+        els.freeMetric.classList.toggle("danger-text", free < 0);
+        els.payableMetric.classList.toggle("danger-text", summary.billsToPay > 0);
+
+        renderMonthChart(summary);
+        renderBoxChart();
+
+        const filter = els.filterSelect.value;
+        const boxes = filter === "all" ? state.boxes : state.boxes.filter((box) => box.type === filter);
+
+        if (!boxes.length) {
+          els.board.innerHTML = `
+            <div class="box-card" style="grid-column: span 12;">
+              <div class="empty">
+                ${icon("folder")}
+                <strong>Nenhuma caixinha por aqui.</strong>
+                <span>Crie uma nova caixinha ou altere o filtro.</span>
+              </div>
+            </div>
+          `;
+          return;
+        }
+
+        els.board.innerHTML = boxes.map(renderBox).join("");
+        bindBoardActions();
+      }
+
+      function renderMonthChart(summary) {
+        const rows = [
+          {
+            label: "Contas a pagar",
+            detail: "Fixo e mensal ainda aberto",
+            value: summary.billsToPay,
+            color: "var(--red)"
+          },
+          {
+            label: "Contas pagas",
+            detail: "Fixo e mensal concluído",
+            value: summary.billsPaid,
+            color: "var(--green)"
+          },
+          {
+            label: "Guardado no mês",
+            detail: "Reserva já marcada",
+            value: summary.reserveSaved,
+            color: "var(--yellow)"
+          },
+          {
+            label: "Falta guardar",
+            detail: "Meta de reserva restante",
+            value: summary.reserveRemaining,
+            color: "var(--blue)"
+          }
+        ];
+        const max = Math.max(...rows.map((row) => row.value), state.income, 1);
+
+        els.monthChart.innerHTML = rows
+          .map((row) => {
+            const size = row.value > 0 ? Math.max(4, Math.round((row.value / max) * 100)) : 0;
+            return `
+              <div class="chart-row">
+                <div class="chart-label">
+                  <strong>${row.label}</strong>
+                  <span>${row.detail}</span>
+                </div>
+                <div class="bar-track" aria-label="${row.label}: ${BRL.format(row.value)}">
+                  <span class="chart-fill" style="--size: ${size}%; --bar: ${row.color}"></span>
+                </div>
+                <div class="chart-value">${BRL.format(row.value)}</div>
+              </div>
+            `;
+          })
+          .join("");
+      }
+
+      function renderBoxChart() {
+        if (!state.boxes.length) {
+          els.boxChart.innerHTML = `<div class="empty">${icon("chart")}<span>Nenhuma caixinha para mostrar.</span></div>`;
+          return;
+        }
+
+        const max = Math.max(...state.boxes.map((box) => getBoxTotals(box).planned), 1);
+        els.boxChart.innerHTML = state.boxes
+          .map((box) => {
+            const totals = getBoxTotals(box);
+            const plannedSize = totals.planned > 0 ? Math.max(4, Math.round((totals.planned / max) * 100)) : 0;
+            const usedSize = totals.used > 0 ? Math.max(4, Math.round((totals.used / max) * 100)) : 0;
+            return `
+              <div class="box-chart-row">
+                <div class="box-chart-label">
+                  <strong>${escapeHtml(box.name)}</strong>
+                  <span>${typeLabels[box.type]}</span>
+                </div>
+                <div
+                  class="stack-track"
+                  aria-label="${escapeHtml(box.name)}: ${BRL.format(totals.used)} de ${BRL.format(totals.planned)}"
+                >
+                  <span
+                    class="stack-planned"
+                    style="--size: ${plannedSize}%; --planned-color: ${hexToTint(box.color)}"
+                  ></span>
+                  <span
+                    class="stack-used"
+                    style="--size: ${usedSize}%; --used-color: ${box.color}"
+                  ></span>
+                </div>
+                <div class="box-chart-value">
+                  ${BRL.format(totals.used)}
+                  <span>de ${BRL.format(totals.planned)}</span>
+                </div>
+              </div>
+            `;
+          })
+          .join("");
+      }
+
+      function renderBox(box) {
+        const totals = getBoxTotals(box);
+        const percent = totals.planned > 0 ? Math.round((totals.used / totals.planned) * 100) : 0;
+        const remaining = totals.planned - totals.used;
+        const remainingLabel = box.type === "reserve" ? "Falta guardar" : "Falta pagar";
+
+        return `
+          <article
+            class="box-card"
+            style="--accent: ${box.color}; --tint: ${hexToTint(box.color)}; --progress: ${percent}%"
+          >
+            <div class="box-head">
+              <div class="box-title-row">
+                <div>
+                  <h3>${escapeHtml(box.name)}</h3>
+                  <p>${typeLabels[box.type] || "Caixinha"}</p>
+                </div>
+                <div class="detail-row">
+                  <button class="icon-btn" type="button" data-action="edit-box" data-id="${box.id}" aria-label="Editar caixinha">
+                    ${icon("edit")}
+                  </button>
+                  <button class="icon-btn" type="button" data-action="delete-box" data-id="${box.id}" aria-label="Excluir caixinha">
+                    ${icon("trash")}
+                  </button>
+                </div>
+              </div>
+
+              <div class="money-row">
+                <div class="mini-stat">
+                  <span>Planejado</span>
+                  <strong>${BRL.format(totals.planned)}</strong>
+                </div>
+                <div class="mini-stat">
+                  <span>${remainingLabel}</span>
+                  <strong class="${remaining < 0 ? "danger-text" : ""}">${BRL.format(remaining)}</strong>
+                </div>
+              </div>
+
+              <div>
+                <div class="progress" aria-label="Progresso da caixinha">
+                  <span></span>
+                </div>
+                <div class="status-line">
+                  <span>${percent}% concluído</span>
+                  <span>${BRL.format(totals.used)} pago ou reservado</span>
+                </div>
+              </div>
+
+              <div class="box-actions">
+                <button class="primary-btn" type="button" data-action="add-item" data-id="${box.id}">
+                  ${icon("plus")}
+                  Lançamento
+                </button>
+              </div>
+            </div>
+
+            <div class="item-list">
+              ${
+                box.items.length
+                  ? box.items.map((item) => renderItem(box.id, item)).join("")
+                  : `<div class="empty">${icon("receipt")}<span>Nenhum lançamento ainda.</span></div>`
+              }
+            </div>
+          </article>
+        `;
+      }
+
+      function renderItem(boxId, item) {
+        const isPaid = item.status === "paid";
+        return `
+          <div class="item-row">
+            <div class="item-main">
+              <strong>${escapeHtml(item.name)}</strong>
+              <span>${formatDate(item.due)}</span>
+            </div>
+            <div class="item-value">
+              <strong>${BRL.format(item.amount)}</strong>
+              <span class="pill ${isPaid ? "" : "danger"}">${isPaid ? "Pago" : "Planejado"}</span>
+              <div class="detail-row">
+                <button class="icon-btn" type="button" data-action="edit-item" data-box-id="${boxId}" data-id="${item.id}" aria-label="Editar lançamento">
+                  ${icon("edit")}
+                </button>
+                <button class="icon-btn" type="button" data-action="delete-item" data-box-id="${boxId}" data-id="${item.id}" aria-label="Excluir lançamento">
+                  ${icon("trash")}
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      function bindBoardActions() {
+        els.board.querySelectorAll("button[data-action]").forEach((button) => {
+          button.addEventListener("click", () => {
+            const { action, id, boxId } = button.dataset;
+            if (action === "add-item") openItemModal(id);
+            if (action === "edit-box") openBoxModal(id);
+            if (action === "delete-box") deleteBox(id);
+            if (action === "edit-item") openItemModal(boxId, id);
+            if (action === "delete-item") deleteItem(boxId, id);
+          });
+        });
+      }
+
+      function openBoxModal(id = "") {
+        const box = state.boxes.find((item) => item.id === id);
+        els.boxModalTitle.textContent = box ? "Editar caixinha" : "Nova caixinha";
+        els.boxId.value = box?.id || "";
+        els.boxName.value = box?.name || "";
+        els.boxType.value = box?.type || "fixed";
+        els.boxGoal.value = box?.goal ? String(box.goal).replace(".", ",") : "";
+        currentColor = box?.color || colors[0];
+        renderSwatches();
+        els.boxModal.classList.add("open");
+        els.boxName.focus();
+      }
+
+      function closeBoxModal() {
+        els.boxModal.classList.remove("open");
+        els.boxForm.reset();
+      }
+
+      function openItemModal(boxId, itemId = "") {
+        const box = state.boxes.find((entry) => entry.id === boxId);
+        const item = box?.items.find((entry) => entry.id === itemId);
+        if (!box) return;
+
+        els.itemModalTitle.textContent = item ? "Editar lançamento" : `Novo lançamento em ${box.name}`;
+        els.itemBoxId.value = boxId;
+        els.itemId.value = item?.id || "";
+        els.itemName.value = item?.name || "";
+        els.itemAmount.value = item?.amount ? String(item.amount).replace(".", ",") : "";
+        els.itemDue.value = item?.due || "";
+        els.itemStatus.value = item?.status || "planned";
+        els.itemModal.classList.add("open");
+        els.itemName.focus();
+      }
+
+      function closeItemModal() {
+        els.itemModal.classList.remove("open");
+        els.itemForm.reset();
+      }
+
+      async function deleteBox(id) {
+        const box = state.boxes.find((item) => item.id === id);
+        if (!box) return;
+        const confirmed = window.confirm(`Excluir a caixinha "${box.name}" e seus lançamentos?`);
+        if (!confirmed) return;
+
+        state.boxes = state.boxes.filter((item) => item.id !== id);
+        await saveCurrentState();
+        render();
+        showToast("Caixinha excluída.");
+      }
+
+      async function deleteItem(boxId, id) {
+        const box = state.boxes.find((item) => item.id === boxId);
+        if (!box) return;
+        box.items = box.items.filter((item) => item.id !== id);
+        await saveCurrentState();
+        render();
+        showToast("Lançamento removido.");
+      }
+
+      function renderSwatches() {
+        els.swatches.innerHTML = colors
+          .map(
+            (color) => `
+              <button
+                class="swatch ${color === currentColor ? "active" : ""}"
+                type="button"
+                style="--swatch: ${color}"
+                aria-label="Selecionar cor ${color}"
+                data-color="${color}"
+              ></button>
+            `
+          )
+          .join("");
+
+        els.swatches.querySelectorAll("button").forEach((button) => {
+          button.addEventListener("click", () => {
+            currentColor = button.dataset.color;
+            renderSwatches();
+          });
+        });
+      }
+
+      async function createEssentialBoxes() {
+        if (!state) return;
+        const essentialNames = ["Contas fixas", "Contas mensais", "Reserva"];
+        const hasEssential = essentialNames.every((name) =>
+          state.boxes.some((box) => box.name.toLowerCase() === name.toLowerCase())
+        );
+
+        if (hasEssential) {
+          showToast("As caixinhas essenciais já estão prontas.");
+          return;
+        }
+
+        state.boxes = createDefaultState().boxes;
+        await saveCurrentState();
+        render();
+        showToast("Caixinhas essenciais criadas.");
+      }
+
+      function exportData() {
+        if (!state) return;
+        const summary = getDashboardSummary();
+        const lines = [
+          "Resumo das caixinhas financeiras",
+          `Usuário: ${session.user?.name || ""}`,
+          `Renda mensal: ${BRL.format(state.income)}`,
+          `Contas a pagar: ${BRL.format(summary.billsToPay)}`,
+          `Guardado no mês: ${BRL.format(summary.reserveSaved)}`,
+          "",
+          ...state.boxes.flatMap((box) => {
+            const totals = getBoxTotals(box);
+            return [
+              `${box.name} - ${typeLabels[box.type]}`,
+              `Planejado: ${BRL.format(totals.planned)}`,
+              `Pago ou reservado: ${BRL.format(totals.used)}`,
+              ...box.items.map(
+                (item) =>
+                  `  - ${item.name}: ${BRL.format(item.amount)} | ${formatDate(item.due)} | ${
+                    item.status === "paid" ? "Pago" : "Planejado"
+                  }`
+              ),
+              ""
+            ];
+          })
+        ];
+
+        const blob = new Blob([lines.join("\n")], { type: "text/plain;charset=utf-8" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = "caixinhas-financeiras.txt";
+        link.click();
+        URL.revokeObjectURL(url);
+        showToast("Resumo exportado.");
+      }
+
+      function hexToTint(hex) {
+        const clean = hex.replace("#", "");
+        const rgb = clean.match(/.{1,2}/g).map((value) => Number.parseInt(value, 16));
+        return `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, 0.12)`;
+      }
+
+      function escapeHtml(value) {
+        return String(value).replace(/[&<>"']/g, (match) => {
+          const map = {
+            "&": "&amp;",
+            "<": "&lt;",
+            ">": "&gt;",
+            '"': "&quot;",
+            "'": "&#039;"
+          };
+          return map[match];
+        });
+      }
+
+      function showToast(message) {
+        els.toast.textContent = message;
+        els.toast.hidden = false;
+        window.clearTimeout(showToast.timer);
+        showToast.timer = window.setTimeout(() => {
+          els.toast.hidden = true;
+        }, 2400);
+      }
+
+      function randomBytes(length) {
+        const bytes = new Uint8Array(length);
+        crypto.getRandomValues(bytes);
+        return bytes;
+      }
+
+      function randomId() {
+        return crypto.randomUUID ? crypto.randomUUID() : `id-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+      }
+
+      function bytesToBase64(bytes) {
+        let binary = "";
+        const chunkSize = 0x8000;
+        for (let index = 0; index < bytes.length; index += chunkSize) {
+          binary += String.fromCharCode(...bytes.slice(index, index + chunkSize));
+        }
+        return btoa(binary);
+      }
+
+      function base64ToBytes(value) {
+        return Uint8Array.from(atob(value), (char) => char.charCodeAt(0));
+      }
+
+      function icon(name) {
+        const icons = {
+          plus: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>',
+          edit:
+            '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20h9"></path><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"></path></svg>',
+          trash:
+            '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18"></path><path d="M8 6V4h8v2"></path><path d="M19 6l-1 14H6L5 6"></path><path d="M10 11v5M14 11v5"></path></svg>',
+          receipt:
+            '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2Z"></path><path d="M8 7h8M8 12h8M8 17h5"></path></svg>',
+          folder:
+            '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7a2 2 0 0 1 2-2h5l2 2h7a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"></path></svg>',
+          chart:
+            '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19V5"></path><path d="M4 19h16"></path><path d="M8 16v-5"></path><path d="M13 16V8"></path><path d="M18 16v-9"></path></svg>',
+          user:
+            '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 21a8 8 0 0 0-16 0"></path><circle cx="12" cy="7" r="4"></circle></svg>'
+        };
+        return icons[name] || icons.plus;
+      }
+
+      if ("serviceWorker" in navigator && location.protocol !== "file:") {
+        window.addEventListener("load", () => {
+          navigator.serviceWorker.register("./service-worker.js").catch(() => {});
+        });
+      }
+    </script>
+  </body>
+</html>
